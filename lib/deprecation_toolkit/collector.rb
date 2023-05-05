@@ -36,8 +36,8 @@ module DeprecationToolkit
     def deprecations_without_stacktrace
       deprecations.map do |deprecation|
         deprecation
-          .sub(*active_support_deprecation_sub_params)
-          .sub(*gem_deprecate_sub_params)
+          .gsub(*gem_deprecate_sub_params)
+          .gsub("#{Dir.pwd}/", "")
       end
     end
 
@@ -64,6 +64,7 @@ module DeprecationToolkit
 
     private
 
+    # deprecations.first.sub(/\/.*?\/ruby\/gems\/.*?\/gems\//, "").sub("#{Dir.pwd}/", "")
     def active_support_deprecation_sub_params
       if ActiveSupport.gem_version.to_s < "5.0"
         [/\W\s\(called from .*\)$/, ""]
@@ -73,7 +74,8 @@ module DeprecationToolkit
     end
 
     def gem_deprecate_sub_params
-      [/NOTE: (.*is deprecated.*)\n.* called from.*:\d+\.\n/, "\\1"]
+      # [/NOTE: (.*is deprecated.*)\n.* called from.*:\d+\.\n/, "\\1"]
+      ["#{Gem.paths.home}/gems/", ""]
     end
   end
 end
